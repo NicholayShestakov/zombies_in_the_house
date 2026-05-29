@@ -23,7 +23,7 @@ class GameContext(
     private val board: Board,
     players: List<Player>,
     val localization: String,
-    winConditionsToWin: Int = 2,
+    val winConditionsToWin: Int = 2,
     private val seed: Int? = null,
 ) {
     val playersSize = players.size
@@ -80,6 +80,7 @@ class GameContext(
      */
     fun incrementWinConditionsCount() = winManager.incrementWinConditions()
 
+    val winConditions: Int get() = winManager.winConditions
     val isWin: Boolean get() = winManager.isWin()
     val isLose: Boolean get() = winManager.isLose(turnManager.players)
 
@@ -97,9 +98,12 @@ class GameContext(
         item,
     )
 
-    val monstersOnBoard: List<Entity> get() = board.monstersOnBoard
-    val nonactiveHumansOnBoard: List<Entity> get() = board.humansOnBoard.filter { it != activePlayerEntity }
     val playersNames: List<String> get() = turnManager.players.map { it.name }
+    val playersOnFinishNames: List<String>
+        get() =
+            board.onFinishHumans.mapNotNull { human ->
+                playersManager.getPlayerWithEntity(human)?.name
+            }
 
     /*
      * Active player section
@@ -107,10 +111,13 @@ class GameContext(
     private val activePlayer: Player get() = turnManager.activePlayer
     val activePlayerName: String get() = activePlayer.name
     val activePlayerPlaysAsHuman: Boolean get() = activePlayer.playsAsHuman
+    val activePlayerInventoryList: List<Item>
+        get() = inventoryManager.getInventoryItems(activePlayer)
     val activePlayerInventoryTypesSet: Set<ItemType>
         get() = inventoryManager.getInventoryItemTypes(activePlayer).toSet()
 
     private val activePlayerEntity: Entity get() = turnManager.activePlayer.currentEntity
+    val activePlayerEntityNameKey: String get() = activePlayerEntity.cardNameKey
     val activePlayerHealth: Int get() = activePlayerEntity.healthPoints
     val activePlayerEntityIsAlive: Boolean get() = activePlayerEntity.healthPoints > 0
 
@@ -236,8 +243,17 @@ class GameContext(
     }
 
     /*
-     * Cell section
+     * Cells section
      */
+    val boardWidth: Int get() = board.width
+    val boardHeight: Int get() = board.height
+    val boardCellsCardsAndConditions: List<Pair<List<Card>, List<CellType>>>
+        get() = board.cellsCardsAndConditions
+    val boardWalls: List<Pair<Pair<Int, Int>, Pair<Int, Int>>>
+        get() = board.walls
+    val monstersOnBoard: List<Entity> get() = board.monstersOnBoard
+    val nonactiveHumansOnBoard: List<Entity> get() = board.humansOnBoard.filter { it != activePlayerEntity }
+
     fun wallExists(
         coordinates: Pair<Int, Int>,
         direction: Direction,
