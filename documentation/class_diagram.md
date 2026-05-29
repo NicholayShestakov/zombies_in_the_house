@@ -1,3 +1,4 @@
+```mermaid
 classDiagram
 direction TB
 
@@ -546,3 +547,4 @@ GameStarter ..> PlayerFactory
 GameStarter ..> DeckFactory
 GameStarter ..> BoardFactory
 GameStarter ..> GameContext
+```
