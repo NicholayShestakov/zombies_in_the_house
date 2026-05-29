@@ -1,20 +1,38 @@
 package game.actions
 
+import game.board.Direction
 import game.gameControl.GameContext
-import game.Direction
+import game.gameControl.GameState
 
-class ActionMove(
-    val context: GameContext,
-    val direction: Direction,
-): Action {
-
-    override val availableStates = emptyList<ActionStates>()
+class MoveAction(
+    private val context: GameContext,
+    private val direction: Direction,
+) : Action(
+        listOf("actions.move.name", direction.nameKey),
+        listOf("actions.move.description"),
+        context,
+    ) {
     override val isAvailable: Boolean
         get() {
-
+            try {
+                val coords = context.activePlayerCoordinates
+                val neighbourCoords = Pair(coords.first + direction.delta.first, coords.second + direction.delta.second)
+                return context.gameState in listOf(GameState.ESCAPE, GameState.STEPPING) &&
+                    !context.wallExists(context.activePlayerCoordinates, direction) &&
+                    context.cellExists(neighbourCoords)
+            } catch (e: IllegalStateException) {
+                if (e.message == "Active player entity is not on board") {
+                    return false
+                }
+                throw (e)
+            }
         }
 
-    override fun action(): Boolean {
-
+    override fun execute(): Boolean {
+        if (isAvailable) {
+            context.activePlayerMove(direction)
+            return true
+        }
+        return false
     }
 }

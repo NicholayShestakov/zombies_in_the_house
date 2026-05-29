@@ -1,7 +1,39 @@
-package actions
+package game.actions
 
-interface Action {
+import game.gameControl.GameContext
+import java.util.MissingResourceException
+import java.util.ResourceBundle
 
-    val isAvailable: Boolean
-    fun action(): Boolean
+abstract class Action(
+    val nameKey: List<String>,
+    val descriptionKey: List<String>,
+    private val context: GameContext,
+) {
+    abstract val isAvailable: Boolean
+
+    abstract fun execute(): Boolean
+
+    @Suppress("SwallowedException")
+    open fun getName(): String {
+        return try {
+            nameKey.joinToString(
+                separator = " ",
+                transform = { ResourceBundle.getBundle("resources/language_" + context.localization).getString(it) },
+            )
+        } catch (e: MissingResourceException) {
+            nameKey.joinToString(separator = " ")
+        }
+    }
+
+    @Suppress("SwallowedException")
+    open fun getDescription(): String {
+        return try {
+            descriptionKey.joinToString(
+                separator = " ",
+                transform = { ResourceBundle.getBundle("resources/language_" + context.localization).getString(it) },
+            )
+        } catch (e: MissingResourceException) {
+            descriptionKey.joinToString(separator = " ")
+        }
+    }
 }
