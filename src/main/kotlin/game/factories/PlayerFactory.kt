@@ -17,8 +17,22 @@ class PlayerFactory {
             }
 
         players.forEach {
-            if (it.currentEntity.abilities.contains(EntityAbility.START_KNIFE)) it.inventory.add(Item(ItemType.KNIFE))
-            if (it.currentEntity.abilities.contains(EntityAbility.START_GUN)) it.inventory.add(Item(ItemType.GUN))
+            if (it.currentEntity.abilities.contains(EntityAbility.START_KNIFE)) {
+                it.inventory.add(
+                    Item(
+                        ItemType.KNIFE,
+                        isFaceDown = false,
+                    ),
+                )
+            }
+            if (it.currentEntity.abilities.contains(EntityAbility.START_GUN)) {
+                it.inventory.add(
+                    Item(
+                        ItemType.GUN,
+                        isFaceDown = false,
+                    ),
+                )
+            }
         }
 
         return players
