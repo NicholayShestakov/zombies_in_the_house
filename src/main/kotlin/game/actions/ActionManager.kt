@@ -18,29 +18,30 @@ class ActionManager(
             FlipCardAction(context),
         )
 
-    private val nonautomaticActions =
-        context.monstersOnBoard.map { ChooseMonsterAction(context, it) } +
-            FinishTurnAction(context) +
-            context.nonactiveHumansOnBoard.flatMap { human ->
-                context.activePlayerInventoryTypesSet.map {
-                    GiveItemToOtherPlayerAction(
+    private val nonautomaticActions: List<Action>
+        get() =
+            context.monstersOnBoard.map { ChooseMonsterAction(context, it) } +
+                FinishTurnAction(context) +
+                context.nonactiveHumansOnBoard.flatMap { human ->
+                    context.activePlayerInventoryTypesSet.map {
+                        GiveItemToOtherPlayerAction(
+                            context,
+                            human,
+                            it,
+                        )
+                    }
+                } +
+                Direction.entries.map { MoveAction(context, it) } +
+                SkipAttackAction(context) +
+                SpinnerAction(context) +
+                UseFirstAidKitAction(context) +
+                listOf(ItemType.KNIFE, ItemType.GUN, ItemType.GRENADE, ItemType.GRENADE_LAUNCHER).map {
+                    UseWeaponAction(
                         context,
-                        human,
                         it,
                     )
-                }
-            } +
-            Direction.entries.map { MoveAction(context, it) } +
-            SkipAttackAction(context) +
-            SpinnerAction(context) +
-            UseFirstAidKitAction(context) +
-            listOf(ItemType.KNIFE, ItemType.GUN, ItemType.GRENADE, ItemType.GRENADE_LAUNCHER).map {
-                UseWeaponAction(
-                    context,
-                    it,
-                )
-            } +
-            UseWinConditionAction(context)
+                } +
+                UseWinConditionAction(context)
 
     val higherAvailableAutomatic: Action?
         get() = automaticActions.firstOrNull { it.isAvailable }
