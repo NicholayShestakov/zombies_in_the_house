@@ -10,7 +10,7 @@ class GiveItemToOtherPlayerAction(
     private val otherPlayerHuman: Entity,
     private val itemType: ItemType,
 ) : Action(
-        listOf("actions.give_item_to_other_player.name"),
+        listOf("actions.give_item_to_other_player.name", otherPlayerHuman.cardNameKey),
         listOf("actions.give_item_to_other_player.description"),
         context,
     ) {
