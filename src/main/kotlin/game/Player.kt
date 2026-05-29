@@ -1,22 +1,12 @@
-import cards.Entity
+package game
+
+import game.cards.Entity
+import game.cards.Item
 
 class Player(
-    val name: String
+    val name: String,
+    var currentEntity: Entity,
 ) {
-
-    private var currentStepCount = 0
-    private var isHuman = true
-    private var _previousCell: Cell? = null
-    val previousCell: Cell?
-        get() {
-            return _previousCell
-        }
-    private var _currentEntity: Entity? = null
-    var currentEntity: Entity?
-        get() {
-            return _currentEntity
-        }
-        set(newEntity: Entity?) {
-            _currentEntity = newEntity
-        }
+    val inventory: MutableList<Item> = mutableListOf()
+    val playsAsHuman: Boolean get() = currentEntity.isHuman && currentEntity.healthPoints > 0
 }
