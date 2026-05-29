@@ -1,8 +1,7 @@
 package cards
 
 abstract class Card(
-    val name: String,
-    private var _coordinates: Pair<Int, Int>,
+    val name: String
 ) {
 
     private var _isFaceDown = true
@@ -10,11 +9,11 @@ abstract class Card(
         get() {
             return _isFaceDown
         }
+    private var _coordinates = Pair(-1, -1)
     val coordinates: Pair<Int, Int>
         get() {
             return _coordinates
         }
-
 
     fun flip(): Boolean {
         if (_isFaceDown) {
@@ -23,6 +22,4 @@ abstract class Card(
         }
         return false
     }
-
-    abstract fun use()
 }
