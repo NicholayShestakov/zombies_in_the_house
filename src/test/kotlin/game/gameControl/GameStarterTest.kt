@@ -7,7 +7,7 @@ import kotlin.test.assertNotEquals
 class GameStarterTest {
     @Test
     fun `start builds context from config`() {
-        val manager =
+        val (manager) =
             GameStarter().start(
                 GameConfig(
                     playerCount = 2,
