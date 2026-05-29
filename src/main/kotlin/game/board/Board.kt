@@ -187,6 +187,16 @@ class Board(
         return getExistCell(coordinates).cards.isEmpty()
     }
 
+    val width: Int get() = cellList.size
+
+    val height: Int get() = cellList.firstOrNull()?.size ?: 0
+
+    val cellsCardsAndConditions: List<Pair<List<Card>, List<CellType>>>
+        get() = cellList.flatten().map { cell -> cell.cards.toList() to cell.conditions.toList() }
+
+    val walls: List<Pair<Pair<Int, Int>, Pair<Int, Int>>>
+        get() = wallList.toList()
+
     val cardsOnBoard: List<Card>
         get() = cellList.flatten().flatMap { it.cards }
 
