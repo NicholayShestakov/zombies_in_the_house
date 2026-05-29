@@ -15,7 +15,7 @@ class GameSessionPipeline {
         initialization.setPlayerName(1, "Bob")
         val config = initialization.buildGameConfig()
         val starter = GameStarter()
-        val manager = starter.start(config, 0) // Сид подобран таким образом, чтобы на волчке всегда выпадали клыки
+        val (manager) = starter.start(config, 0) // Сид подобран таким образом, чтобы на волчке всегда выпадали клыки
         return manager
     }
 
