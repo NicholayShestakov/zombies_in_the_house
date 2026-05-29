@@ -4,6 +4,8 @@ import game.gameControl.GameContext
 import java.util.MissingResourceException
 import java.util.ResourceBundle
 
+private const val LANGUAGE_BUNDLE_PREFIX = "language_"
+
 abstract class Action(
     val nameKey: List<String>,
     val descriptionKey: List<String>,
@@ -18,7 +20,7 @@ abstract class Action(
         return try {
             nameKey.joinToString(
                 separator = " ",
-                transform = { ResourceBundle.getBundle("resources/language_" + context.localization).getString(it) },
+                transform = { ResourceBundle.getBundle(LANGUAGE_BUNDLE_PREFIX + context.localization).getString(it) },
             )
         } catch (e: MissingResourceException) {
             nameKey.joinToString(separator = " ")
@@ -30,7 +32,7 @@ abstract class Action(
         return try {
             descriptionKey.joinToString(
                 separator = " ",
-                transform = { ResourceBundle.getBundle("resources/language_" + context.localization).getString(it) },
+                transform = { ResourceBundle.getBundle(LANGUAGE_BUNDLE_PREFIX + context.localization).getString(it) },
             )
         } catch (e: MissingResourceException) {
             descriptionKey.joinToString(separator = " ")
