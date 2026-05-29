@@ -1,454 +1,418 @@
-# Диаграмма классов пакета `game`
-
-```mermaid
 classDiagram
-direction LR
+direction TB
 
+%% === game package ===
 class Player {
-  +String name
-  +Entity currentEntity
-  +MutableList~Item~ inventory
-  +Boolean playsAsHuman
++String name
++Entity currentEntity
++MutableList inventory
++Boolean playsAsHuman
 }
-
 class Spinner {
-  <<object>>
-  +getValue(seed Int?) SpinnerValue
+<<object>>
++getValue(Int? seed) SpinnerValue
 }
-
 class SpinnerValue {
-  <<enumeration>>
-  ESCAPE
-  FANGS
-  BLADES
-  AIM
-  +Int number
+<<enumeration>>
+ESCAPE
+FANGS
+BLADES
+AIM
++Int number
 }
 
+%% === game.cards ===
 class Card {
-  <<abstract>>
-  +String cardNameKey
-  +String cardDescriptionKey
-  -Boolean privateIsFaceDown
-  +Boolean isFaceDown
-  +flip() Unit
+<<abstract>>
++String cardNameKey
++String cardDescriptionKey
+-Boolean privateIsFaceDown
++Boolean isFaceDown
++flip()
 }
-
 class Entity {
-  +Boolean isHuman
-  +List~DamageType~ canDamagedBy
-  +Int healthPoints
-  +List~EntityAbility~ abilities
-  +Int plusSpeed
++Boolean isHuman
++List canDamagedBy
++Int healthPoints
++List abilities
++Int plusSpeed
 }
-
 class Item {
-  +ItemType itemType
++ItemType itemType
 }
-
 class DamageType {
-  <<enumeration>>
-  KNIFE
-  GUN
-  GRENADE
-  GRENADE_LAUNCHER
-  FANGS
+<<enumeration>>
+KNIFE
+GUN
+GRENADE
+GRENADE_LAUNCHER
+FANGS
 }
-
 class EntityAbility {
-  <<enumeration>>
-  DOUBLE_HEAL
-  START_GUN
-  START_KNIFE
+<<enumeration>>
+DOUBLE_HEAL
+START_GUN
+START_KNIFE
 }
-
 class ItemType {
-  <<enumeration>>
-  FIRST_AID_KIT
-  WIN_CONDITION
-  KNIFE
-  GUN
-  GRENADE
-  GRENADE_LAUNCHER
-  +String nameKey
-  +String descriptionKey
-  +DamageType nullableDamageType
-  +List~SpinnerValue~ nullableSpinnerValuesToUse
-  +List~GameState~ nullableStatesToUse
-  +Boolean isSingleUsable
+<<enumeration>>
+FIRST_AID_KIT
+WIN_CONDITION
+KNIFE
+GUN
+GRENADE
+GRENADE_LAUNCHER
++String nameKey
++String descriptionKey
++DamageType? damageType
++List? spinnerValuesToUse
++List? statesToUse
++Boolean isSingleUsable
 }
 
+%% === game.board ===
 class Board {
-  -List cellList
-  -List wallList
-  +cellExists(coordinates) Boolean
-  -getExistCell(coordinates) Cell
-  +getCellWithCardCoordinates(card Card) Pair
-  +cellHasCondition(coordinates, condition CellType) Boolean
-  +wallExists(coordinates, direction Direction) Boolean
-  +existCellHasNeighbour(coordinates, direction Direction) Boolean
-  -getExistCellExistNeighbour(coordinates, direction Direction) Cell
-  +isCardNeighbour(coordinates, card Card) Boolean
-  +existCellHasCard(coordinates, card Card) Boolean
-  +existCellAddCard(coordinates, card Card) Unit
-  +existCellRemoveCard(coordinates, card Card) Unit
-  +existCellHasAnyCard(coordinates, cards List~Card~) Boolean
-  +existCellAddCards(coordinates, cards List~Card~) Unit
-  +move(card Card, direction Direction) Unit
-  +hasOpponents(coordinates, playsAsHuman Boolean) Boolean
-  +getHighestOpponent(coordinates, playsAsHuman Boolean) Entity
-  +hasItems(coordinates) Boolean
-  +takeHighestItem(coordinates) Item
-  +hasFaceDown(coordinates) Boolean
-  +flipFaceDown(coordinates) Unit
-  +isEmpty(coordinates) Boolean
-  +List~Card~ cardsOnBoard
-  +List~Entity~ monstersOnBoard
-  +List~Entity~ humansOnBoard
-  +List~Entity~ onFinishHumans
+-List cellList
+-List wallList
++cellExists(Pair) Boolean
+-getExistCell(Pair) Cell
++getCellWithCardCoordinates(Card) Pair?
++cellHasCondition(Pair, CellType) Boolean
++wallExists(Pair, Direction) Boolean
++existCellHasNeighbour(Pair, Direction) Boolean
+-getExistCellExistNeighbour(Pair, Direction) Cell
++isCardNeighbour(Pair, Card) Boolean
++existCellHasCard(Pair, Card) Boolean
++existCellAddCard(Pair, Card)
++existCellRemoveCard(Pair, Card)
++existCellHasAnyCard(Pair, List) Boolean
++existCellAddCards(Pair, List)
++move(Card, Direction)
++hasOpponents(Pair, Boolean) Boolean
++getHighestOpponent(Pair, Boolean) Entity
++hasItems(Pair) Boolean
++takeHighestItem(Pair) Item
++hasFaceDown(Pair) Boolean
++flipFaceDown(Pair)
++isEmpty(Pair) Boolean
++List cardsOnBoard
++List monstersOnBoard
++List humansOnBoard
++List onFinishHumans
 }
-
 class Cell {
-  +List~CellType~ conditions
-  +MutableList~Card~ cards
++List conditions
++MutableList cards
 }
-
 class CellType {
-  <<enumeration>>
-  START
-  FINISH
+<<enumeration>>
+START
+FINISH
 }
-
 class Direction {
-  <<enumeration>>
-  UP
-  DOWN
-  RIGHT
-  LEFT
-  +Pair delta
-  +String nameKey
+<<enumeration>>
+UP
+DOWN
+RIGHT
+LEFT
++Pair delta
++String nameKey
 }
 
+%% === game.actions ===
 class Action {
-  <<abstract>>
-  +List~String~ nameKey
-  +List~String~ descriptionKey
-  -GameContext context
-  +Boolean isAvailable
-  +execute() Boolean
-  +getName() String
-  +getDescription() String
+<<abstract>>
++List nameKey
++List descriptionKey
+-GameContext context
++Boolean isAvailable
++execute() Boolean
++getName() String
++getDescription() String
 }
-
 class ActionManager {
-  -GameContext context
-  -List~Action~ automaticActions
-  -List~Action~ nonautomaticActions
-  +Action higherAvailableAutomatic
-  +List~Action~ availableNonautomaticList
+-GameContext context
+-List automaticActions
+-List nonautomaticActions
++Action? higherAvailableAutomatic
++List availableNonautomaticList
 }
-
 class ChooseMonsterAction {
-  -GameContext context
-  -Entity monster
-  +Boolean isAvailable
-  +execute() Boolean
+-GameContext context
+-Entity monster
++Boolean isAvailable
++execute() Boolean
 }
-
 class EndBattleAction {
-  +GameContext context
-  +Boolean isAvailable
-  +execute() Boolean
++GameContext context
++Boolean isAvailable
++execute() Boolean
 }
-
 class EndGameAction {
-  -GameContext context
-  +Boolean isAvailable
-  +execute() Boolean
+-GameContext context
++Boolean isAvailable
++execute() Boolean
 }
-
 class FinishTurnAction {
-  +GameContext context
-  +Boolean isAvailable
-  +execute() Boolean
++GameContext context
++Boolean isAvailable
++execute() Boolean
 }
-
 class FlipCardAction {
-  -GameContext context
-  +Boolean isAvailable
-  +execute() Boolean
+-GameContext context
++Boolean isAvailable
++execute() Boolean
 }
-
 class GiveItemToOtherPlayerAction {
-  -GameContext context
-  -Entity otherPlayerHuman
-  -ItemType itemType
-  +Boolean isAvailable
-  +execute() Boolean
+-GameContext context
+-Entity otherPlayerHuman
+-ItemType itemType
++Boolean isAvailable
++execute() Boolean
 }
-
 class MonsterPlayerTurnSkipAction {
-  -GameContext context
-  +Boolean isAvailable
-  +execute() Boolean
+-GameContext context
++Boolean isAvailable
++execute() Boolean
 }
-
 class MoveAction {
-  -GameContext context
-  -Direction direction
-  +Boolean isAvailable
-  +execute() Boolean
+-GameContext context
+-Direction direction
++Boolean isAvailable
++execute() Boolean
 }
-
 class PickUpAction {
-  +GameContext context
-  +Boolean isAvailable
-  +execute() Boolean
++GameContext context
++Boolean isAvailable
++execute() Boolean
 }
-
 class SkipAttackAction {
-  -GameContext context
-  +Boolean isAvailable
-  +execute() Boolean
+-GameContext context
++Boolean isAvailable
++execute() Boolean
 }
-
 class SpinnerAction {
-  -GameContext context
-  +Boolean isAvailable
-  +execute() Boolean
+-GameContext context
++Boolean isAvailable
++execute() Boolean
 }
-
 class SpinnerSpinnedAction {
-  -GameContext context
-  +Boolean isAvailable
-  +execute() Boolean
+-GameContext context
++Boolean isAvailable
++execute() Boolean
 }
-
 class StartBattleAction {
-  -GameContext context
-  +Boolean isAvailable
-  +execute() Boolean
+-GameContext context
++Boolean isAvailable
++execute() Boolean
 }
-
 class UseFirstAidKitAction {
-  -GameContext context
-  +Boolean isAvailable
-  +execute() Boolean
+-GameContext context
++Boolean isAvailable
++execute() Boolean
 }
-
 class UseWeaponAction {
-  +GameContext context
-  +ItemType itemType
-  +Boolean isAvailable
-  +execute() Boolean
++GameContext context
++ItemType itemType
++Boolean isAvailable
++execute() Boolean
 }
-
 class UseWinConditionAction {
-  +GameContext context
-  +Boolean isAvailable
-  +execute() Boolean
++GameContext context
++Boolean isAvailable
++execute() Boolean
 }
 
+%% === game.factories ===
 class BoardFactory {
-  -getDefaultCellList() List
-  -getDefaultWallList() List
-  -fillCellListWithDefaultCards(cellList, cardDeck, seed) Unit
-  -fillCellListWithPlayerHumans(cellList, humans, seed) Unit
-  +createDefaultBoard(humans List~Entity~, deck List~Card~, seed Int?) Board
+-getDefaultCellList() List
+-getDefaultWallList() List
+-fillCellListWithDefaultCards(List, List, Int?)
+-fillCellListWithPlayerHumans(List, List, Int?)
++createDefaultBoard(List, List, Int?) Board
 }
-
 class DeckFactory {
-  +createDefaultCardDeck() List~Card~
++createDefaultCardDeck() List
 }
-
 class HumanFactory {
-  +createDefaultShuffledHumans(playerCount Int, startHealth Int, seed Int?) List~Entity~
++createDefaultShuffledHumans(Int, Int, Int?) List
 }
-
 class PlayerFactory {
-  +createPlayers(names List~String~, humans List~Entity~) List~Player~
++createPlayers(List, List) List
 }
 
+%% === game.gameControl ===
 class GameConfig {
-  <<data>>
-  +Int playerCount
-  +List~String~ playerNames
-  +Int startHealth
-  +String localization
+<<data>>
++Int playerCount
++List playerNames
++Int startHealth
++String localization
 }
-
 class GameInitialization {
-  +Int playerCount
-  -MutableList~String~ playerNames
-  +List~String~ playerNamesList
-  +Int startHealth
-  +setPlayerCount(count Int) Int
-  +setPlayerName(index Int, name String) String
-  +setPlayerStartHealth(health Int) Int
-  +buildGameConfig() GameConfig
++Int playerCount
+-MutableList playerNames
++List playerNamesList
++Int startHealth
++setPlayerCount(Int) Int
++setPlayerName(Int, String) String
++setPlayerStartHealth(Int) Int
++buildGameConfig() GameConfig
 }
-
 class GameStarter {
-  +start(config GameConfig, seed Int?) ActionManager
++start(GameConfig, Int?) ActionManager
 }
-
 class GameState {
-  <<enumeration>>
-  MONSTER_CHOOSING
-  STEP_SPINNER_SPINNING
-  STEP_SPINNER_SPINNED
-  STEPPING
-  BATTLE_SPINNER_SPINNING
-  BATTLE_SPINNER_SPINNED
-  BATTLE
-  ESCAPE_SPINNER_SPINNING
-  ESCAPE_SPINNER_SPINNED
-  ESCAPE
-  TURN_FINISH
+<<enumeration>>
+MONSTER_CHOOSING
+STEP_SPINNER_SPINNING
+STEP_SPINNER_SPINNED
+STEPPING
+BATTLE_SPINNER_SPINNING
+BATTLE_SPINNER_SPINNED
+BATTLE
+ESCAPE_SPINNER_SPINNING
+ESCAPE_SPINNER_SPINNED
+ESCAPE
+TURN_FINISH
 }
-
 class GameContext {
-  -Board board
-  +String localization
-  -Int seed
-  +Int playersSize
-  -TurnManager turnManager
-  -PlayersManager playersManager
-  -WinManager winManager
-  -InventoryManager inventoryManager
-  -MovementManager movementManager
-  -HealthManager healthManager
-  -BattleManager battleManager
-  -SpinnerManager spinnerManager
-  +GameState gameState
-  +SpinnerValue spinnerValue
-  +spin(spinSeed Int?) Unit
-  +Int activePlayerIndex
-  +nextTurn() Unit
-  +incrementWinConditionsCount() Unit
-  +Boolean isWin
-  +Boolean isLose
-  +nonactivePlayerHasEntity(entity Entity) Boolean
-  +playerWithEntityAddItem(entity Entity, item Item) Unit
-  +List~Entity~ monstersOnBoard
-  +List~Entity~ nonactiveHumansOnBoard
-  +List~String~ playersNames
-  -Player activePlayer
-  +String activePlayerName
-  +Boolean activePlayerPlaysAsHuman
-  +Set~ItemType~ activePlayerInventoryTypesSet
-  -Entity activePlayerEntity
-  +Int activePlayerHealth
-  +Boolean activePlayerEntityIsAlive
-  +activePlayerHasAbility(ability EntityAbility) Boolean
-  +activePlayerSetEntity(entity Entity) Unit
-  +activePlayerAddHealth(count Int) Unit
-  +Pair activePlayerCoordinates
-  +Int activePlayerStepCount
-  +activePlayerStartStepping() Unit
-  +activePlayerMove(direction Direction) Unit
-  +activePlayerHasItem(type ItemType) Boolean
-  +activePlayerRemoveItem(type ItemType) Unit
-  +getActivePlayerItemWithType(type ItemType) Item
-  +Boolean activePlayerHasOpponent
-  +Boolean isStateForStartBattle
-  +startBattle() Unit
-  +Boolean monsterIsAlive
-  +monsterAddHealth(count Int) Unit
-  +monsterCanDamagedBy(damageType DamageType) Boolean
-  +Boolean isEndBattle
-  +goToBattleSpinner() Unit
-  +goInBattleState() Unit
-  +endBattle() Unit
-  +Boolean activePlayerOnItem
-  +activePlayerPickUpItem() Unit
-  +Boolean activePlayerOnFaceDownCard
-  +flip() Unit
-  +wallExists(coordinates, direction Direction) Boolean
-  +cellExists(coordinates) Boolean
-  +cellHasCard(coordinates, card Card) Boolean
-  +cellAddCard(coordinates, card Card) Unit
-  +cellHasCondition(coordinates, condition CellType) Boolean
-  +isEntityNeighbourOfActive(coordinates, entity Entity) Boolean
+-Board board
++String localization
+-Int? seed
++Int playersSize
+-TurnManager turnManager
+-PlayersManager playersManager
+-WinManager winManager
+-InventoryManager inventoryManager
+-MovementManager movementManager
+-HealthManager healthManager
+-BattleManager battleManager
+-SpinnerManager spinnerManager
++GameState gameState
++SpinnerValue spinnerValue
++spin(Int?)
++Int activePlayerIndex
++nextTurn()
++incrementWinConditionsCount()
++Boolean isWin
++Boolean isLose
++nonactivePlayerHasEntity(Entity) Boolean
++playerWithEntityAddItem(Entity, Item)
++List monstersOnBoard
++List nonactiveHumansOnBoard
++List playersNames
+-Player activePlayer
++String activePlayerName
++Boolean activePlayerPlaysAsHuman
++Set activePlayerInventoryTypesSet
+-Entity activePlayerEntity
++Int activePlayerHealth
++Boolean activePlayerEntityIsAlive
++activePlayerHasAbility(EntityAbility) Boolean
++activePlayerSetEntity(Entity)
++activePlayerAddHealth(Int)
++Pair activePlayerCoordinates
++Int activePlayerStepCount
++activePlayerStartStepping()
++activePlayerMove(Direction)
++activePlayerHasItem(ItemType) Boolean
++activePlayerRemoveItem(ItemType)
++getActivePlayerItemWithType(ItemType) Item
++Boolean activePlayerHasOpponent
++Boolean isStateForStartBattle
++startBattle()
++Boolean monsterIsAlive
++monsterAddHealth(Int)
++monsterCanDamagedBy(DamageType) Boolean
++Boolean isEndBattle
++goToBattleSpinner()
++goInBattleState()
++endBattle()
++Boolean activePlayerOnItem
++activePlayerPickUpItem()
++Boolean activePlayerOnFaceDownCard
++flip()
++wallExists(Pair, Direction) Boolean
++cellExists(Pair) Boolean
++cellHasCard(Pair, Card)
++cellAddCard(Pair, Card)
++cellHasCondition(Pair, CellType) Boolean
++isEntityNeighbourOfActive(Pair, Entity) Boolean
 }
 
+%% === game.gameControl.contextManagers ===
 class BattleManager {
-  +TurnManager turnManager
-  +Board board
-  +PlayersManager playersManager
-  +MovementManager movementManager
-  +HealthManager healthManager
-  -Player activePlayer
-  -Entity activePlayerEntity
-  -Pair activePlayerCoordinates
-  +Boolean activePlayerHasOpponent
-  +Entity monster
-  +Int tempIndex
-  +Boolean isActive
-  +startBattle() Unit
-  +Boolean monsterIsAlive
-  +monsterAddHealth(count Int) Unit
-  +monsterCanDamagedBy(damageType DamageType) Boolean
-  +isEndBattle(spinnerValue SpinnerValue) Boolean
-  +endBattle() Unit
-  +switchToTempIndex() Unit
++TurnManager turnManager
++Board board
++PlayersManager playersManager
++MovementManager movementManager
++HealthManager healthManager
+-Player activePlayer
+-Entity activePlayerEntity
+-Pair activePlayerCoordinates
++Boolean activePlayerHasOpponent
++Entity? monster
++Int? tempIndex
++Boolean isActive
++startBattle()
++Boolean monsterIsAlive
++monsterAddHealth(Int)
++monsterCanDamagedBy(DamageType) Boolean
++isEndBattle(SpinnerValue) Boolean
++endBattle()
++switchToTempIndex()
 }
-
 class HealthManager {
-  +PlayersManager playersManager
-  +InventoryManager inventoryManager
-  +Board board
-  +addHealth(entity Entity, count Int) Unit
++PlayersManager playersManager
++InventoryManager inventoryManager
++Board board
++addHealth(Entity, Int)
 }
-
 class InventoryManager {
-  +hasItem(player Player, type ItemType) Boolean
-  +getPlayerItemWithType(player Player, type ItemType) Item
-  +addItem(player Player, item Item) Unit
-  +removeItem(player Player, type ItemType) Unit
-  +getInventoryItems(player Player) List~Item~
-  +getInventoryItemTypes(player Player) List~ItemType~
++hasItem(Player, ItemType) Boolean
++getPlayerItemWithType(Player, ItemType) Item
++addItem(Player, Item)
++removeItem(Player, ItemType)
++getInventoryItems(Player) List
++getInventoryItemTypes(Player) List
 }
-
 class MovementManager {
-  +TurnManager turnManager
-  +Board board
-  -Entity entity
-  +Pair currentCoordinates
-  +Int currentStepCount
-  +Boolean hasSteps
-  +move(direction Direction) Unit
-  +startStepping(stepCount Int) Unit
-  +stopStepping() Unit
++TurnManager turnManager
++Board board
+-Entity entity
++Pair currentCoordinates
++Int currentStepCount
++Boolean hasSteps
++move(Direction)
++startStepping(Int)
++stopStepping()
 }
-
 class PlayersManager {
-  +List~Player~ players
-  +getPlayerWithEntity(entity Entity) Player
-  +getPlayerWithEntityIndex(entity Entity) Int
++List players
++getPlayerWithEntity(Entity) Player?
++getPlayerWithEntityIndex(Entity) Int
 }
-
 class SpinnerManager {
-  +SpinnerValue spinnerValue
-  +spin(seed Int?) Unit
-  +resetForBattle() Unit
++SpinnerValue spinnerValue
++spin(Int?)
++resetForBattle()
 }
-
 class TurnManager {
-  +List~Player~ players
-  +Int activePlayerIndex
-  +Player activePlayer
-  +nextTurn() Unit
++List players
++Int activePlayerIndex
++Player activePlayer
++nextTurn()
 }
-
 class WinManager {
-  +Int winConditionsToWin
-  +Int winConditions
-  +incrementWinConditions() Unit
-  +isWin() Boolean
-  +isLose(players List~Player~) Boolean
++Int winConditionsToWin
++Int winConditions
++incrementWinConditions()
++isWin() Boolean
++isLose(List) Boolean
 }
 
+%% === Inheritance ===
 Card <|-- Entity
 Card <|-- Item
 Action <|-- ChooseMonsterAction
@@ -468,107 +432,117 @@ Action <|-- UseFirstAidKitAction
 Action <|-- UseWeaponAction
 Action <|-- UseWinConditionAction
 
-Player "1" --> "1" Entity : currentEntity
-Player "1" *-- "0..*" Item : inventory
+%% === Composition ===
+Player *-- Item : inventory
+Board *-- Cell : cellList
+GameContext *-- TurnManager
+GameContext *-- PlayersManager
+GameContext *-- WinManager
+GameContext *-- InventoryManager
+GameContext *-- MovementManager
+GameContext *-- HealthManager
+GameContext *-- BattleManager
+GameContext *-- SpinnerManager
+ActionManager *-- Action : automaticActions
+ActionManager *-- Action : nonautomaticActions
+
+%% === Aggregation ===
+Cell o-- Card : cards
+Cell o-- CellType : conditions
+
+%% === Association ===
+Player --> Entity : currentEntity
 Entity --> DamageType : canDamagedBy
 Entity --> EntityAbility : abilities
 Item --> ItemType : itemType
 ItemType --> DamageType : damageType
 ItemType --> SpinnerValue : spinnerValuesToUse
 ItemType --> GameState : statesToUse
-Spinner ..> SpinnerValue : returns
 
-Board "1" *-- "many" Cell : cellList
-Board ..> Direction : movement
-Board ..> CellType : conditions
-Board ..> Card : cards
-Board ..> Entity : opponents
-Board ..> Item : items
-Cell "1" o-- "0..*" Card : cards
-Cell ..> CellType : conditions
-
+%% === Dependencies ===
+Spinner ..> SpinnerValue
+GameContext --> Board : board
+GameContext --> GameState : gameState
+GameContext --> Player : activePlayer
+GameContext --> Entity : activePlayerEntity
+GameContext --> Direction
+GameContext --> Card
+GameContext --> CellType
+GameContext --> DamageType
+GameContext --> EntityAbility
+GameContext --> Item
+GameContext --> ItemType
 Action --> GameContext : context
 ActionManager --> GameContext : context
-ActionManager "1" *-- "0..*" Action : actions
-ActionManager ..> Direction : creates moves
-ActionManager ..> ItemType : creates item actions
+ActionManager ..> Direction
+ActionManager ..> ItemType
 ChooseMonsterAction --> Entity : monster
 GiveItemToOtherPlayerAction --> Entity : otherPlayerHuman
 GiveItemToOtherPlayerAction --> ItemType : itemType
 MoveAction --> Direction : direction
 UseWeaponAction --> ItemType : itemType
+UseWinConditionAction ..> ItemType
+UseWinConditionAction ..> CellType
+UseFirstAidKitAction ..> ItemType
+UseFirstAidKitAction ..> EntityAbility
 
-BoardFactory ..> Board : creates
-BoardFactory ..> Cell : creates
-BoardFactory ..> CellType : uses
-BoardFactory ..> Card : places
-BoardFactory ..> Entity : places humans
-DeckFactory ..> Card : creates
-DeckFactory ..> Entity : creates monsters
-DeckFactory ..> Item : creates items
-DeckFactory ..> ItemType : uses
-DeckFactory ..> DamageType : uses
-HumanFactory ..> Entity : creates
-HumanFactory ..> DamageType : uses
-HumanFactory ..> EntityAbility : uses
-PlayerFactory ..> Player : creates
-PlayerFactory ..> Entity : assigns
-PlayerFactory ..> Item : grants start items
-PlayerFactory ..> ItemType : uses
-GameInitialization ..> GameConfig : builds
-GameStarter ..> GameConfig : uses
-GameStarter ..> ActionManager : returns
-GameStarter ..> HumanFactory : uses
-GameStarter ..> PlayerFactory : uses
-GameStarter ..> DeckFactory : uses
-GameStarter ..> BoardFactory : uses
-GameStarter ..> GameContext : creates
+BattleManager --> TurnManager
+BattleManager --> Board
+BattleManager --> PlayersManager
+BattleManager --> MovementManager
+BattleManager --> HealthManager
+BattleManager --> Player
+BattleManager --> Entity
+BattleManager ..> SpinnerValue
+BattleManager ..> DamageType
+HealthManager --> PlayersManager
+HealthManager --> InventoryManager
+HealthManager --> Board
+HealthManager --> Entity
+InventoryManager --> Player
+InventoryManager --> Item
+InventoryManager --> ItemType
+MovementManager --> TurnManager
+MovementManager --> Board
+MovementManager --> Direction
+MovementManager --> Entity
+PlayersManager --> Player
+PlayersManager --> Entity
+SpinnerManager ..> Spinner
+SpinnerManager ..> SpinnerValue
+TurnManager --> Player
+WinManager --> Player
 
-GameContext --> Board : board
-GameContext --> GameState : gameState
-GameContext --> SpinnerValue : spinnerValue
-GameContext --> Player : activePlayer
-GameContext --> Entity : entities
-GameContext --> Item : items
-GameContext --> ItemType : inventory
-GameContext --> DamageType : damage
-GameContext --> EntityAbility : abilities
-GameContext --> Direction : movement
-GameContext --> Card : board cards
-GameContext --> CellType : cell conditions
-GameContext *-- TurnManager : turnManager
-GameContext *-- PlayersManager : playersManager
-GameContext *-- WinManager : winManager
-GameContext *-- InventoryManager : inventoryManager
-GameContext *-- MovementManager : movementManager
-GameContext *-- HealthManager : healthManager
-GameContext *-- BattleManager : battleManager
-GameContext *-- SpinnerManager : spinnerManager
+Board ..> Card
+Board ..> Entity
+Board ..> Item
+Board ..> Direction
+Board ..> CellType
 
-BattleManager --> TurnManager : turnManager
-BattleManager --> Board : board
-BattleManager --> PlayersManager : playersManager
-BattleManager --> MovementManager : movementManager
-BattleManager --> HealthManager : healthManager
-BattleManager --> Player : activePlayer
-BattleManager --> Entity : monster
-BattleManager --> SpinnerValue : battle result
-BattleManager --> DamageType : damage type
-HealthManager --> PlayersManager : playersManager
-HealthManager --> InventoryManager : inventoryManager
-HealthManager --> Board : board
-HealthManager --> Entity : health target
-InventoryManager --> Player : inventory owner
-InventoryManager --> Item : inventory item
-InventoryManager --> ItemType : item type
-MovementManager --> TurnManager : turnManager
-MovementManager --> Board : board
-MovementManager --> Direction : direction
-MovementManager --> Entity : moving entity
-PlayersManager --> Player : players
-PlayersManager --> Entity : lookup
-SpinnerManager --> Spinner : spin source
-SpinnerManager --> SpinnerValue : value
-TurnManager --> Player : players
-WinManager --> Player : lose check
-```
+BoardFactory ..> Board
+BoardFactory ..> Cell
+BoardFactory ..> CellType
+BoardFactory ..> Card
+BoardFactory ..> Entity
+DeckFactory ..> Card
+DeckFactory ..> Entity
+DeckFactory ..> Item
+DeckFactory ..> ItemType
+DeckFactory ..> DamageType
+HumanFactory ..> Entity
+HumanFactory ..> DamageType
+HumanFactory ..> EntityAbility
+PlayerFactory ..> Player
+PlayerFactory ..> Entity
+PlayerFactory ..> Item
+PlayerFactory ..> ItemType
+PlayerFactory ..> EntityAbility
+
+GameInitialization ..> GameConfig
+GameStarter ..> GameConfig
+GameStarter ..> ActionManager
+GameStarter ..> HumanFactory
+GameStarter ..> PlayerFactory
+GameStarter ..> DeckFactory
+GameStarter ..> BoardFactory
+GameStarter ..> GameContext
