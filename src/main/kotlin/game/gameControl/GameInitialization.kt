@@ -1,4 +1,4 @@
-package game.game_control
+package game.gameControl
 
 class GameInitialization {
     var playerCount = 1

@@ -1,4 +1,4 @@
-package game.game_control
+package game.gameControl
 
 import game.Player
 import game.board.Board
@@ -10,14 +10,14 @@ import game.cards.Entity
 import game.cards.EntityAbility
 import game.cards.Item
 import game.cards.ItemType
-import game.game_control.context_managers.BattleManager
-import game.game_control.context_managers.HealthManager
-import game.game_control.context_managers.InventoryManager
-import game.game_control.context_managers.MovementManager
-import game.game_control.context_managers.PlayersManager
-import game.game_control.context_managers.SpinnerManager
-import game.game_control.context_managers.TurnManager
-import game.game_control.context_managers.WinManager
+import game.gameControl.contextManagers.BattleManager
+import game.gameControl.contextManagers.HealthManager
+import game.gameControl.contextManagers.InventoryManager
+import game.gameControl.contextManagers.MovementManager
+import game.gameControl.contextManagers.PlayersManager
+import game.gameControl.contextManagers.SpinnerManager
+import game.gameControl.contextManagers.TurnManager
+import game.gameControl.contextManagers.WinManager
 
 class GameContext(
     private val board: Board,
@@ -191,7 +191,9 @@ class GameContext(
     }
 
     fun goInBattleState() {
-        require(gameState == GameState.BATTLE_SPINNER_SPINNED) { "Game state must be BATTLE_SPINNER_SPINNED to go in battle" }
+        require(gameState == GameState.BATTLE_SPINNER_SPINNED) {
+            "Game state must be BATTLE_SPINNER_SPINNED to go in battle"
+        }
         gameState = GameState.BATTLE
     }
 
@@ -218,7 +220,9 @@ class GameContext(
      */
     val activePlayerOnItem: Boolean get() = board.hasItems(activePlayerCoordinates)
 
-    fun activePlayerPickUpItem() = inventoryManager.addItem(activePlayer, board.takeHighestItem(activePlayerCoordinates))
+    fun activePlayerPickUpItem() {
+        inventoryManager.addItem(activePlayer, board.takeHighestItem(activePlayerCoordinates))
+    }
 
     /*
      * Card flip section
